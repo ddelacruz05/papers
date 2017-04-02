@@ -1,0 +1,51 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Registro de Usuario</title>
+    </h:head>
+    <body>
+        <h:form>
+            <p:messages id="mensaje" autoUpdate="false"
+                        severity="info, fatal" showSummary="true" showDetail="true"/>
+            
+            <p:fieldset legend="Registro de Usuario">
+                <h:panelGrid columns="3" id="pgRegisterUser">
+                    
+                    <p:outputLabel for="txtName" value="Nombre"/>
+                    <p:inputText id="txtName" value="#{userController.user.name}" required="true" 
+                                 requiredMessage="Campo Requerido"/>
+                    <p:message for="txtName" />
+                    
+                    <p:outputLabel for="txtUser" value="Usuario"/>
+                    <p:inputText id="txtUser" value="#{userController.user.user}" required="true" 
+                                 requiredMessage="Campo Requerido"/>
+                    <p:message for="txtUser" />
+                    
+                    <p:outputLabel for="txtEmail" value="Email"/>
+                    <p:inputText id="txtEmail" value="#{userController.user.email}" required="true" 
+                                 requiredMessage="Campo Requerido"/>
+                    <p:message for="txtEmail" />
+                    
+                    <p:outputLabel for="txtContrasenia" value="Contraseña"/>
+                    <p:password id="txtContrasenia" value="#{userController.user.password}"
+                                validatorMessage="Las claves no coinciden." 
+                                weakLabel="Débil" strongLabel="Fuerte" goodLabel="Bueno"
+                                match="txtRepeatContrasenia" feedback="true" promptLabel="Ingrese la contraseña" 
+                                required="true" requiredMessage="Campo Requerido"/>
+                    <p:message for="txtContrasenia" />
+                    
+                    <p:outputLabel for="txtRepeatContrasenia" value="Repetir Contraseña"/>
+                    <p:password id="txtRepeatContrasenia" required="true" requiredMessage="Campo Requerido"/>
+                    <p:message for="txtRepeatContrasenia" />
+                    
+                </h:panelGrid>
+                
+                <p:commandButton icon="fa fa-fw fa-save" value="Guardar" 
+                                 update="pgRegisterUser, mensaje" actionListener="#{userController.register()}"/>
+            </p:fieldset>
+        </h:form>
+    </body>
+</html>

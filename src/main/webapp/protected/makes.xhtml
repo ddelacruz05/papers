@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:fieldset legend="Registro de Marcas" > 
+                
+                <h:form id="formRegisterMake" >
+                    <p:growl id="mensaje" showDetail="true" />
+                    <h:panelGrid columns="3" id="pgRegisterMake" >
+                        <p:outputLabel for="txtName" value="Nombre" />
+                        <p:inputText id="txtName" value="#{makeController.make.name}" required="true" 
+                                     requiredMessage="Campo Requerido" />
+                        <p:message for="txtName" />
+                        <p:outputLabel for="txtState" value="Estado" />
+                        <p:selectOneMenu id="txtState" value="#{makeController.make.state}" >
+                            <f:selectItem itemLabel="Activa" itemValue="A" />
+                            <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                        </p:selectOneMenu>
+                        <p:message for="txtState" />
+                    </h:panelGrid>
+                     
+                    <p:commandButton icon="fa fa-fw fa-save" value="Guardar" 
+                                     update="formRegisterMake,formRegisterMake:mensaje, :formListMakes:dataTableMakes"
+                                     actionListener="#{makeController.register()}" 
+                                     oncomplete="cleanElementById('formRegisterMake:txtName')">                            
+                    </p:commandButton>
+                    
+                </h:form>
+                </p:fieldset>
+                <p:separator />
+                <p:separator />
+                <h:form id="formListMakes" >
+                    <p:remoteCommand name="actualizaTabla" update="dataTableMakes"/>
+                    <p:dataTable id="dataTableMakes" var="make" value="#{makeController.makes}" 
+                                 widgetVar="makesTable" emptyMessage="No se encuentran marcas" 
+                                 scrollable="true" editable="true" scrollHeight="200"
+                                 style="margin-bottom:20px" >
+                        <f:facet name="header">
+                            Lista de Marcas
+                        </f:facet>
+                        <p:ajax event="rowEdit" listener="#{makeController.onRowEdit}" 
+                                update=":formRegisterMake:mensaje" 
+                                oncomplete="actualizaTabla();"/>
+                        <p:ajax event="rowEditCancel" listener="#{makeController.onRowCancel}" 
+                                update=":formRegisterMake:mensaje" />
+                        <p:column filterBy="#{make.id}" headerText="Id" filterMatchMode="contains">
+                            <h:outputText value="#{make.id}" style="width:25px"/>
+                        </p:column>
+                        <p:column filterBy="#{make.name}" headerText="Nombre" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{make.name}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{make.name}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{make.state}" headerText="Estado" filterMatchMode="equals">
+                            <f:facet name="filter">
+                                <p:selectOneButton onchange="PF('makesTable').filter()" >
+                                    <f:selectItem itemLabel="Todas" itemValue="" />
+                                    <f:selectItem itemLabel="Activa" itemValue="A" />
+                                    <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                </p:selectOneButton>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{make.state == 'A' ? 'Activa': 'Inactiva'}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                   <h:selectOneMenu value="#{make.state}" style="width:100%" >
+                                       <f:selectItem itemLabel="Activa" itemValue="A" />
+                                       <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                   </h:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>                                
+                        </p:column>
+                        <p:column style="width:32px;">
+                            <p:rowEditor />
+                        </p:column>
+                    </p:dataTable>
+                      
+                </h:form>               
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
