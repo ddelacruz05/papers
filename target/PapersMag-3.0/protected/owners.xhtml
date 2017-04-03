@@ -1,0 +1,94 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:fieldset legend="Registro de Propietarios" > 
+                
+                <h:form id="formRegisterOwner" >
+                    <p:growl id="mensaje" showDetail="true" />
+                    <h:panelGrid columns="3" id="pgRegisterOwner" >
+                        <p:outputLabel for="txtName" value="Nombre" />
+                        <p:inputText id="txtName" value="#{ownerController.owner.name}" required="true" 
+                                     requiredMessage="Campo Requerido" />
+                        <p:message for="txtName" />
+                        <p:outputLabel for="txtState" value="Estado" />
+                        <p:selectOneMenu id="txtState" value="#{ownerController.owner.state}" >
+                            <f:selectItem itemLabel="Activa" itemValue="A" />
+                            <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                        </p:selectOneMenu>
+                        <p:message for="txtState" />
+                    </h:panelGrid>
+                     
+                    <p:commandButton icon="fa fa-fw fa-save" value="Guardar" 
+                                     update="formRegisterOwner,formRegisterOwner:mensaje, :formListOwners:dataTableOwners"
+                                     actionListener="#{ownerController.register()}" 
+                                     oncomplete="cleanElementById('formRegisterOwner:txtName')">                            
+                    </p:commandButton>
+                    
+                </h:form>
+                </p:fieldset>
+                <p:separator />
+                <p:separator />
+                <h:form id="formListOwners" >
+                    <p:remoteCommand name="actualizaTabla" update="dataTableOwners"/>
+                    <p:dataTable id="dataTableOwners" var="owner" value="#{ownerController.owners}" 
+                                 widgetVar="ownersTable" emptyMessage="No se encuentran propietarios" 
+                                 scrollable="true" editable="true" scrollHeight="200"
+                                 style="margin-bottom:20px" >
+                        <f:facet name="header">
+                            Lista de Propietarios
+                        </f:facet>
+                        <p:ajax event="rowEdit" listener="#{ownerController.onRowEdit}" 
+                                update=":formRegisterOwner:mensaje" 
+                                oncomplete="actualizaTabla();"/>
+                        <p:ajax event="rowEditCancel" listener="#{ownerController.onRowCancel}" 
+                                update=":formRegisterOwner:mensaje" />
+                        <p:column filterBy="#{owner.id}" headerText="Id" filterMatchMode="contains">
+                            <h:outputText value="#{owner.id}" style="width:25px"/>
+                        </p:column>
+                        <p:column filterBy="#{owner.name}" headerText="Nombre" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{owner.name}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{owner.name}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{owner.state}" headerText="Estado" filterMatchMode="equals">
+                            <f:facet name="filter">
+                                <p:selectOneButton onchange="PF('ownersTable').filter()" >
+                                    <f:selectItem itemLabel="Todas" itemValue="" />
+                                    <f:selectItem itemLabel="Activa" itemValue="A" />
+                                    <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                </p:selectOneButton>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{owner.state == 'A' ? 'Activa': 'Inactiva'}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                   <h:selectOneMenu value="#{owner.state}" style="width:100%" >
+                                       <f:selectItem itemLabel="Activa" itemValue="A" />
+                                       <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                   </h:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>                                
+                        </p:column>
+                        <p:column style="width:32px;">
+                            <p:rowEditor />
+                        </p:column>
+                    </p:dataTable>
+                      
+                </h:form>               
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

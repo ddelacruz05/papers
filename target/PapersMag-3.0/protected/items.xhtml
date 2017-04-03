@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:fieldset legend="Registro de Items" > 
+                
+                <h:form id="formRegisterItem" >
+                    <p:growl id="mensaje" showDetail="true" />
+                    <h:panelGrid columns="9" id="pgRegisterItem" >
+                        
+                        <p:outputLabel for="txtDescription" value="Nombre" />
+                        <p:inputText id="txtDescription" value="#{itemController.item.description}" 
+                                     required="true" requiredMessage="Campo Requerido" />
+                        <p:message for="txtDescription" />
+                        
+                        <p:outputLabel for="txtSerial" value="Serial" />
+                        <p:inputText id="txtSerial" value="#{itemController.item.serial}"/>
+                        <p:message for="txtSerial" />
+                        
+                        <p:outputLabel for="txtStock" value="Stock" />
+                        <p:inputText id="txtStock" value="#{itemController.item.stock}"/>
+                        <p:message for="txtStock" />
+                        
+                        <p:outputLabel for="txtMake" value="Marca" />
+                        <p:selectOneMenu id="txtMake" value="#{itemController.make.id}" 
+                                         required="true" requiredMessage="Campo Requerido" >
+                            <f:selectItem itemLabel="Seleccione" itemValue="" />
+                            <f:selectItems value="#{itemController.makes}" var="makes" 
+                                           itemLabel="#{makes.name}" itemValue="#{makes.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="txtMake" />
+                        
+                        <p:outputLabel for="txtReference" value="Referencia" />
+                        <p:inputText id="txtReference" value="#{itemController.item.reference}"/>
+                        <p:message for="txtReference" />
+                        
+                        <p:outputLabel for="txtSalePrice" value="Precio de Venta" />
+                        <p:inputText id="txtSalePrice" value="#{itemController.item.salePrice}"/>
+                        <p:message for="txtSalePrice" />
+                                              
+                        <p:outputLabel for="txtCategories" value="Categorías" />
+                        <p:selectOneMenu id="txtCategories" value="#{itemController.category.id}"
+                                         required="true" requiredMessage="Campo Requerido" >
+                            <f:selectItem itemLabel="Seleccione" itemValue="" />
+                            <f:selectItems value="#{itemController.categories}" var="categories" 
+                                           itemLabel="#{categories.name}" itemValue="#{categories.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="txtCategories" />
+                        
+                        <p:outputLabel for="txtOwners" value="Propietarios" />
+                        <p:selectOneMenu id="txtOwners" value="#{itemController.owner.id}"
+                                         required="true" requiredMessage="Campo Requerido" >
+                            <f:selectItem itemLabel="Seleccione" itemValue="" />
+                            <f:selectItems value="#{itemController.owners}" var="owners" 
+                                           itemLabel="#{owners.name}" itemValue="#{owners.id}"/>
+                        </p:selectOneMenu>
+                        <p:message for="txtOwners" />
+                        
+                        <p:outputLabel for="txtState" value="Estado" />
+                        <p:selectOneMenu id="txtState" value="#{itemController.item.state}" >
+                            <f:selectItem itemLabel="Activa" itemValue="A" />
+                            <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                        </p:selectOneMenu>
+                        <p:message for="txtState" />
+                    </h:panelGrid>
+                     
+                    <p:commandButton icon="fa fa-fw fa-save" value="Guardar" 
+                                     update="formRegisterItem,formRegisterItem:mensaje, :formListItems:dataTableItems"
+                                     actionListener="#{itemController.register()}" 
+                                     oncomplete="cleanElementById('formRegisterItem:txtDescription')">                            
+                    </p:commandButton>
+                    
+                </h:form>
+                </p:fieldset>
+                <p:separator />
+                <h:form id="formListItems" >
+                    <p:remoteCommand name="actualizaTabla" update="dataTableItems"/>
+                    <p:dataTable id="dataTableItems" var="item" value="#{itemController.items}" widgetVar="itemsTable"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 rows="5" paginator="true" rowsPerPageTemplate="5,10,15"
+                                 emptyMessage="No se encuentran marcas" 
+                                 editable="true" style="margin-bottom:20px" >
+                        <f:facet name="header">
+                            Lista de Articulos
+                        </f:facet>
+                        <p:ajax event="rowEdit" listener="#{itemController.onRowEdit}" 
+                                update=":formRegisterItem:mensaje" 
+                                oncomplete="actualizaTabla();"/>
+                        <p:ajax event="rowEditCancel" listener="#{itemController.onRowCancel}" 
+                                update=":formRegisterItem:mensaje" />
+                        <p:column filterBy="#{item.id}" headerText="Id" filterMatchMode="contains">
+                            <h:outputText value="#{item.id}" style="width:25px"/>
+                        </p:column>
+                        <p:column filterBy="#{item.description}" headerText="Nombre" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{item.description}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{item.description}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{item.make.name}" headerText="Marca" filterMatchMode="in">
+                            <f:facet name="filter">
+                                <p:selectCheckboxMenu label="Seleccione" onchange="PF('itemsTable').filter() " 
+                                                      panelStyle="width:150px" scrollHeight="150">
+                                    <f:selectItems value="#{itemController.makes}" var="fMakes" 
+                                                   itemLabel="#{fMakes.name}" itemValue="#{fMakes.name}"/>
+                                </p:selectCheckboxMenu>
+                            </f:facet>      
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{item.make.name}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:selectOneMenu value="#{item.make.id}" style="width:100%">
+                                        <f:selectItems value="#{itemController.makes}" var="makes" 
+                                                       itemLabel="#{makes.name}" itemValue="#{makes.id}"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column filterBy="#{item.category.name}" headerText="Categoría" filterMatchMode="in">
+                            <f:facet name="filter">
+                                <p:selectCheckboxMenu label="Seleccione" onchange="PF('itemsTable').filter() " 
+                                                      panelStyle="width:150px" scrollHeight="150">
+                                    <f:selectItems value="#{itemController.categories}" var="fCategories" 
+                                                   itemLabel="#{fCategories.name}" itemValue="#{fCategories.name}"/>
+                                </p:selectCheckboxMenu>
+                            </f:facet>      
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{item.category.name}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:selectOneMenu value="#{item.category.id}" style="width:100%">
+                                        <f:selectItems value="#{itemController.categories}" var="categories" 
+                                                       itemLabel="#{categories.name}" itemValue="#{categories.id}"/>
+                                    </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        
+                        <p:column filterBy="#{item.state}" headerText="Estado" filterMatchMode="equals">
+                            <f:facet name="filter">
+                                <p:selectOneButton onchange="PF('itemsTable').filter()" >
+                                    <f:selectItem itemLabel="Todas" itemValue="" />
+                                    <f:selectItem itemLabel="Activa" itemValue="A" />
+                                    <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                </p:selectOneButton>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{item.state == 'A' ? 'Activa': 'Inactiva'}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                   <p:selectOneMenu value="#{item.state}" style="width:100%" >
+                                       <f:selectItem itemLabel="Activa" itemValue="A" />
+                                       <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                   </p:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>                                
+                        </p:column>
+                        <p:column style="width:32px;">
+                            <p:rowEditor />
+                        </p:column>
+                    </p:dataTable>
+                      
+                </h:form>               
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>
