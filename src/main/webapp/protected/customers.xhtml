@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:fieldset legend="Registro de Clientes" > 
+                
+                <h:form id="formRegisterCustomer" >
+                    <p:growl id="mensaje" showDetail="true" />
+                    <h:panelGrid columns="3" id="pgRegisterCustomer" >
+                        <p:outputLabel for="txtName" value="Nombre" />
+                        <p:inputText id="txtName" value="#{customerController.customer.name}" required="true" 
+                                     requiredMessage="Campo Requerido" />
+                        <p:message for="txtName" />
+                        
+                        <p:outputLabel for="txtRuc" value="CI" />
+                        <p:inputText id="txtRuc" value="#{customerController.customer.ci}" />
+                        <p:message for="txtRuc" />
+                        
+                        <p:outputLabel for="txtAddress" value="Dirección" />
+                        <p:inputText id="txtAddress" value="#{customerController.customer.address}" />
+                        <p:message for="txtAddress" />
+                        
+                        <p:outputLabel for="txtPhone" value="Teléfono" />
+                        <p:inputText id="txtPhone" value="#{customerController.customer.phone}" />
+                        <p:message for="txtPhone" />
+                        
+                        <p:outputLabel for="txtState" value="Estado" />
+                        <p:selectOneMenu id="txtState" value="#{customerController.customer.state}" >
+                            <f:selectItem itemLabel="Activa" itemValue="A" />
+                            <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                        </p:selectOneMenu>
+                        <p:message for="txtState" />
+                    </h:panelGrid>
+                     
+                    <p:commandButton icon="fa fa-fw fa-save" value="Guardar" 
+                                     update="formRegisterCustomer,formRegisterCustomer:mensaje, :formListCustomers:dataTableCustomers"
+                                     actionListener="#{customerController.register()}" 
+                                     oncomplete="cleanElementById('formRegisterCustomer:txtName')">                            
+                    </p:commandButton>
+                    
+                </h:form>
+                </p:fieldset>
+                <p:separator />
+                <p:separator />
+                <h:form id="formListCustomers" >
+                    <p:remoteCommand name="actualizaTabla" update="dataTableCustomers"/>
+                    <p:dataTable id="dataTableCustomers" var="customer" value="#{customerController.customers}" 
+                                 widgetVar="customersTable" emptyMessage="No se encuentran Clientes" 
+                                 scrollable="true" editable="true" scrollHeight="100"
+                                 style="margin-bottom:20px" >
+                        <f:facet name="header">
+                            Lista de Clientes
+                        </f:facet>
+                        <p:ajax event="rowEdit" listener="#{customerController.onRowEdit}" 
+                                update=":formRegisterCustomer:mensaje" 
+                                oncomplete="actualizaTabla();"/>
+                        <p:ajax event="rowEditCancel" listener="#{customerController.onRowCancel}" 
+                                update=":formRegisterCustomer:mensaje" />
+                        <p:column filterBy="#{customer.id}" headerText="Id" filterMatchMode="contains">
+                            <h:outputText value="#{customer.id}" style="width:25px"/>
+                        </p:column>
+                        <p:column filterBy="#{customer.name}" headerText="Nombre" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{customer.name}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{customer.name}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{customer.ci}" headerText="CI" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{customer.ci}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{customer.ci}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{customer.address}" headerText="Dirección" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{customer.address}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{customer.address}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{customer.phone}" headerText="Teléfono" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{customer.phone}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{customer.phone}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{customer.state}" headerText="Estado" filterMatchMode="equals">
+                            <f:facet name="filter">
+                                <p:selectOneButton onchange="PF('customersTable').filter()" >
+                                    <f:selectItem itemLabel="Todas" itemValue="" />
+                                    <f:selectItem itemLabel="Activa" itemValue="A" />
+                                    <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                </p:selectOneButton>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{customer.state == 'A' ? 'Activa': 'Inactiva'}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                   <h:selectOneMenu value="#{customer.state}" style="width:100%" >
+                                       <f:selectItem itemLabel="Activa" itemValue="A" />
+                                       <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                   </h:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>                                
+                        </p:column>
+                        <p:column style="width:32px;">
+                            <p:rowEditor />
+                        </p:column>
+                    </p:dataTable>
+                      
+                </h:form>               
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

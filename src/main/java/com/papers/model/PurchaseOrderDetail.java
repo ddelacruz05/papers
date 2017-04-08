@@ -28,8 +28,8 @@ public class PurchaseOrderDetail implements Serializable{
     private int id;
     
     @ManyToOne
-    @JoinColumn(name = "provider")
-    private Provider provider;
+    @JoinColumn(name = "purchase_order")
+    private PurchaseOrder purchaseOrder;
     
     @ManyToOne
     @JoinColumn(name = "item")
@@ -55,12 +55,12 @@ public class PurchaseOrderDetail implements Serializable{
         this.id = id;
     }
 
-    public Provider getProvider() {
-        return provider;
+    public PurchaseOrder getPurchaseOrder() {
+        return purchaseOrder;
     }
 
-    public void setProvider(Provider provider) {
-        this.provider = provider;
+    public void setPurchaseOrder(PurchaseOrder purchaseOrder) {
+        this.purchaseOrder = purchaseOrder;
     }
 
     public Item getItem() {

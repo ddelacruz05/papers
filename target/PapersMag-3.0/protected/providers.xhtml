@@ -1,0 +1,137 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+    <body>
+        <ui:composition template="./../WEB-INF/templates/template.xhtml">
+            <ui:define name="content">
+                <p:fieldset legend="Registro de Proveedores" > 
+                
+                <h:form id="formRegisterProvider" >
+                    <p:growl id="mensaje" showDetail="true" />
+                    <h:panelGrid columns="3" id="pgRegisterProvider" >
+                        <p:outputLabel for="txtName" value="Nombre" />
+                        <p:inputText id="txtName" value="#{providerController.provider.name}" required="true" 
+                                     requiredMessage="Campo Requerido" />
+                        <p:message for="txtName" />
+                        
+                        <p:outputLabel for="txtRuc" value="RUC" />
+                        <p:inputText id="txtRuc" value="#{providerController.provider.ruc}" />
+                        <p:message for="txtRuc" />
+                        
+                        <p:outputLabel for="txtAddress" value="Dirección" />
+                        <p:inputText id="txtAddress" value="#{providerController.provider.address}" />
+                        <p:message for="txtAddress" />
+                        
+                        <p:outputLabel for="txtPhone" value="Teléfono" />
+                        <p:inputText id="txtPhone" value="#{providerController.provider.phone}" />
+                        <p:message for="txtPhone" />
+                        
+                        <p:outputLabel for="txtState" value="Estado" />
+                        <p:selectOneMenu id="txtState" value="#{providerController.provider.state}" >
+                            <f:selectItem itemLabel="Activa" itemValue="A" />
+                            <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                        </p:selectOneMenu>
+                        <p:message for="txtState" />
+                    </h:panelGrid>
+                     
+                    <p:commandButton icon="fa fa-fw fa-save" value="Guardar" 
+                                     update="formRegisterProvider,formRegisterProvider:mensaje, :formListProviders:dataTableProviders"
+                                     actionListener="#{providerController.register()}" 
+                                     oncomplete="cleanElementById('formRegisterProvider:txtName')">                            
+                    </p:commandButton>
+                    
+                </h:form>
+                </p:fieldset>
+                <p:separator />
+                <p:separator />
+                <h:form id="formListProviders" >
+                    <p:remoteCommand name="actualizaTabla" update="dataTableProviders"/>
+                    <p:dataTable id="dataTableProviders" var="provider" value="#{providerController.providers}" 
+                                 widgetVar="providersTable" emptyMessage="No se encuentran proveedores" 
+                                 scrollable="true" editable="true" scrollHeight="100"
+                                 style="margin-bottom:20px" >
+                        <f:facet name="header">
+                            Lista de Proveedores
+                        </f:facet>
+                        <p:ajax event="rowEdit" listener="#{providerController.onRowEdit}" 
+                                update=":formRegisterProvider:mensaje" 
+                                oncomplete="actualizaTabla();"/>
+                        <p:ajax event="rowEditCancel" listener="#{providerController.onRowCancel}" 
+                                update=":formRegisterProvider:mensaje" />
+                        <p:column filterBy="#{provider.id}" headerText="Id" filterMatchMode="contains">
+                            <h:outputText value="#{provider.id}" style="width:25px"/>
+                        </p:column>
+                        <p:column filterBy="#{provider.name}" headerText="Nombre" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{provider.name}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{provider.name}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{provider.ruc}" headerText="RUC" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{provider.ruc}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{provider.ruc}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{provider.address}" headerText="Dirección" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{provider.address}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{provider.address}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{provider.phone}" headerText="Teléfono" filterMatchMode="contains">
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{provider.phone}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                    <p:inputText value="#{provider.phone}" style="width:100%" />
+                                </f:facet>
+                            </p:cellEditor>
+                        </p:column>
+                        <p:column filterBy="#{provider.state}" headerText="Estado" filterMatchMode="equals">
+                            <f:facet name="filter">
+                                <p:selectOneButton onchange="PF('providersTable').filter()" >
+                                    <f:selectItem itemLabel="Todas" itemValue="" />
+                                    <f:selectItem itemLabel="Activa" itemValue="A" />
+                                    <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                </p:selectOneButton>
+                            </f:facet>
+                            <p:cellEditor>
+                                <f:facet name="output">
+                                    <h:outputText value="#{provider.state == 'A' ? 'Activa': 'Inactiva'}" />
+                                </f:facet>
+                                <f:facet name="input">
+                                   <h:selectOneMenu value="#{provider.state}" style="width:100%" >
+                                       <f:selectItem itemLabel="Activa" itemValue="A" />
+                                       <f:selectItem itemLabel="Inactiva" itemValue="I" />
+                                   </h:selectOneMenu>
+                                </f:facet>
+                            </p:cellEditor>                                
+                        </p:column>
+                        <p:column style="width:32px;">
+                            <p:rowEditor />
+                        </p:column>
+                    </p:dataTable>
+                      
+                </h:form>               
+            </ui:define>
+        </ui:composition>
+    </body>
+</html>

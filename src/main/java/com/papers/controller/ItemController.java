@@ -48,6 +48,7 @@ public class ItemController implements Serializable {
     @Inject
     private Item item;    
     private List<Item> items;
+    private Item selectedItem;
     
     @Inject
     private Make make;
@@ -75,6 +76,14 @@ public class ItemController implements Serializable {
 
     public void setItems(List<Item> items) {
         this.items = items;
+    }
+
+    public Item getSelectedItem() {
+        return selectedItem;
+    }
+
+    public void setSelectedItem(Item selectedItem) {
+        this.selectedItem = selectedItem;
     }
     
     public Make getMake() {

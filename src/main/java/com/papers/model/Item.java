@@ -21,7 +21,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "bl_items")
-public class Item implements Serializable{
+public class Item implements Serializable,Comparable<Item>{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -137,5 +137,10 @@ public class Item implements Serializable{
         this.state = state;
     }
     
-    
+    @Override
+    public int compareTo(Item item3){
+        String item1 = new String(this.getDescription());
+        String item2 = new String(item3.getDescription());
+        return item1.compareToIgnoreCase(item2);
+    } 
 }

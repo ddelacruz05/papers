@@ -19,7 +19,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "bl_owners")
-public class Owner implements Serializable{
+public class Owner implements Serializable,Comparable<Owner>{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -55,4 +55,10 @@ public class Owner implements Serializable{
         this.state = state;
     }
     
+    @Override
+    public int compareTo(Owner owner3){
+        String owner1 = new String(this.getName());
+        String owner2 = new String(owner3.getName());
+        return owner1.compareToIgnoreCase(owner2);
+    }
 }

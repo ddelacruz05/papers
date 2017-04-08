@@ -19,7 +19,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "bl_providers")
-public class Provider implements Serializable{
+public class Provider implements Serializable,Comparable<Provider>{
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -86,5 +86,12 @@ public class Provider implements Serializable{
 
     public void setState(String state) {
         this.state = state;
+    }
+    
+    @Override
+    public int compareTo(Provider provider3){
+        String provider1 = new String(this.getName());
+        String provider2 = new String(provider3.getName());
+        return provider1.compareToIgnoreCase(provider2);
     }
 }
